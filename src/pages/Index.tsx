@@ -43,7 +43,7 @@ const Index = () => {
                   <Menu className="w-5 h-5 text-cisco-blue" />
                 </SidebarTrigger>
                 <div>
-                  <h1 className="text-2xl font-bold bg-gradient-to-r from-cisco-dark to-cisco-blue bg-clip-text text-transparent">
+                  <h1 className="text-2xl font-bold text-cisco-dark">
                     Welcome to InboxFix AI
                   </h1>
                   <p className="text-cisco-gray-dark mt-1 font-medium">
@@ -71,7 +71,7 @@ const Index = () => {
           <footer className="bg-white/95 backdrop-blur-sm border-t border-cisco-blue/10 p-6 flex justify-center">
             <Badge 
               variant="secondary" 
-              className="bg-gradient-to-r from-cisco-blue/10 to-cisco-purple/10 text-cisco-dark border-cisco-blue/20 px-6 py-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+              className="bg-cisco-blue/10 text-cisco-dark border-cisco-blue/20 px-6 py-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
             >
               <div className="flex items-center space-x-2">
                 <Award className="w-5 h-5 text-cisco-blue" />

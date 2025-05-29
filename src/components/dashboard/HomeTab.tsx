@@ -69,11 +69,11 @@ export function HomeTab() {
     <TooltipProvider>
       <div className="space-y-8 animate-fade-in">
         <div className="flex items-center space-x-3">
-          <div className="p-2 bg-gradient-to-br from-cisco-blue to-cisco-blue-dark rounded-lg">
+          <div className="p-2 bg-cisco-blue rounded-lg">
             <BarChart3 className="w-6 h-6 text-white" />
           </div>
           <div>
-            <h2 className="text-3xl font-bold bg-gradient-to-r from-cisco-dark to-cisco-blue bg-clip-text text-transparent">
+            <h2 className="text-3xl font-bold text-cisco-dark">
               Dashboard Overview
             </h2>
             <p className="text-cisco-gray-dark">Your personalized email management insights</p>
@@ -155,10 +155,15 @@ export function HomeTab() {
                   <Bar 
                     dataKey="alerts" 
                     radius={[8, 8, 0, 0]}
-                    className="animate-bar-grow"
                   >
                     {chartData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={barColors[index % barColors.length]} />
+                      <Cell 
+                        key={`cell-${index}`} 
+                        fill={barColors[index % barColors.length]}
+                        style={{
+                          animation: `barGrow 1.5s ease-out ${index * 0.1}s both`
+                        }}
+                      />
                     ))}
                   </Bar>
                 </BarChart>
