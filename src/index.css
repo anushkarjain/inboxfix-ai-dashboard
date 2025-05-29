@@ -15,7 +15,7 @@
     --popover: 255 255 255;
     --popover-foreground: 33 37 41;
 
-    --primary: 4 159 217;
+    --primary: 0 188 235;
     --primary-foreground: 255 255 255;
 
     --secondary: 233 236 239;
@@ -24,7 +24,7 @@
     --muted: 248 249 250;
     --muted-foreground: 108 117 125;
 
-    --accent: 91 184 216;
+    --accent: 174 99 228;
     --accent-foreground: 255 255 255;
 
     --destructive: 220 53 69;
@@ -32,18 +32,18 @@
 
     --border: 233 236 239;
     --input: 233 236 239;
-    --ring: 4 159 217;
+    --ring: 0 188 235;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
 
     --sidebar-background: 255 255 255;
     --sidebar-foreground: 33 37 41;
-    --sidebar-primary: 4 159 217;
+    --sidebar-primary: 0 188 235;
     --sidebar-primary-foreground: 255 255 255;
     --sidebar-accent: 248 249 250;
     --sidebar-accent-foreground: 33 37 41;
     --sidebar-border: 233 236 239;
-    --sidebar-ring: 4 159 217;
+    --sidebar-ring: 0 188 235;
   }
 }
 
@@ -53,20 +53,85 @@
   }
 
   body {
-    @apply bg-background text-foreground font-inter;
+    @apply bg-gradient-to-br from-gray-50 to-blue-50/30 text-foreground font-inter;
+    background-image: 
+      radial-gradient(circle at 25% 25%, rgba(0, 188, 235, 0.05) 0%, transparent 50%),
+      radial-gradient(circle at 75% 75%, rgba(174, 99, 228, 0.05) 0%, transparent 50%);
   }
 }
 
 @layer utilities {
   .text-cisco-blue {
-    color: #049FD9;
+    color: #00BCEB;
   }
   
   .bg-cisco-blue {
-    background-color: #049FD9;
+    background-color: #00BCEB;
   }
   
   .border-cisco-blue {
-    border-color: #049FD9;
+    border-color: #00BCEB;
+  }
+
+  .text-cisco-dark {
+    color: #005073;
+  }
+  
+  .bg-cisco-dark {
+    background-color: #005073;
+  }
+
+  .text-cisco-purple {
+    color: #AE63E4;
+  }
+  
+  .bg-cisco-purple {
+    background-color: #AE63E4;
+  }
+
+  .text-cisco-green {
+    color: #5AC8B0;
+  }
+  
+  .bg-cisco-green {
+    background-color: #5AC8B0;
+  }
+
+  .animate-bar-grow {
+    animation: barGrow 1.5s ease-out forwards;
+  }
+
+  .animate-pulse-success {
+    animation: pulseSuccess 0.6s ease-out;
+  }
+
+  .hover-lift {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  }
+}
+
+@keyframes barGrow {
+  from {
+    transform: scaleY(0);
+    transform-origin: bottom;
+  }
+  to {
+    transform: scaleY(1);
+    transform-origin: bottom;
+  }
+}
+
+@keyframes pulseSuccess {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+    background-color: #5AC8B0;
   }
 }
