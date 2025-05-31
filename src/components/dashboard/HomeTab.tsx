@@ -160,9 +160,6 @@ export function HomeTab() {
                       <Cell 
                         key={`cell-${index}`} 
                         fill={barColors[index % barColors.length]}
-                        style={{
-                          animation: `barGrow 1.5s ease-out ${index * 0.1}s both`
-                        }}
                       />
                     ))}
                   </Bar>
