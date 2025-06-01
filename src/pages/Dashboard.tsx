@@ -7,6 +7,7 @@ import { FiltersTab } from "@/components/tabs/filters-tab";
 
 
 export default function Dashboard() {
+  
   return (
     <div className="p-6">
       <Tabs defaultValue="digest" className="w-full">

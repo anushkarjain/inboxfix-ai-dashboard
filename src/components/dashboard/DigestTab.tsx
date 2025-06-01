@@ -24,7 +24,7 @@ export function DigestTab() {
   const [digest, setDigest] = useState<DigestData | null>(null);
   const [loadingUser, setLoadingUser] = useState(true);
 
-  const ACCESS_TOKEN = "eyJraWQiOiJYYmZSeTktVmNqc0hHSUJDcVcySUVrMmtwdGhPcXFZVHdVdkJmQzJ5b2ljIiwiYWxnIjoiUlMyNTYifQ.eyJ2ZXIiOjEsImp0aSI6IkFULmxDMFVNdmJnLVFvYzBRWnBGbWV5amxUMEhJMHR5SWN2M3BuQzFiM0N2TzAiLCJpc3MiOiJodHRwczovL2lkLmNpc2NvLmNvbS9vYXV0aDIvZGVmYXVsdCIsImF1ZCI6ImFwaTovL2RlZmF1bHQiLCJpYXQiOjE3NDg1MjQyMjEsImV4cCI6MTc0ODUyNzgyMSwiY2lkIjoiY0c5akxYUnlhV0ZzTWpBeU5VMWhlVEl5LTNhNzgyMzgwMzM4OTI5MjE2Y2U3NTFkZTNlMmM4YiIsInNjcCI6WyJjdXN0b21zY29wZSJdLCJzdWIiOiJjRzlqTFhSeWFXRnNNakF5TlUxaGVUSXktM2E3ODIzODAzMzg5MjkyMTZjZTc1MWRlM2UyYzhiIiwiYXpwIjoiY0c5akxYUnlhV0ZzTWpBeU5VMWhlVEl5LTNhNzgyMzgwMzM4OTI5MjE2Y2U3NTFkZTNlMmM4YiJ9.E3V0ogJc6ovndXThUpt0u__YePZ3HoR7B3fRp1j3M-YH0O_yCc69ww8RiiLm3MpJqpYKuUq3-QFlHtZLax09_T5-GAVpoJu0XSJuY2vF4m6Moo63Fjz1Y9a0XKcBbUh3qHOqJ9QW1P_5PZ1hFHelQNhGUqrZrWU9tfmYeExifdZmK4p2_h1WE5IMPHmHAlYJZIhreVQco4N_C_3HJ5nF4RxyXTJu2ZqR-0vJY0VUhKF6y0sben2Gqf7sbQ7A1sVtL_UGb5hr6BSj_5HtrgsQUK-FO7TpUNBBeZXTsdWiNmgFfuDhcn5VPKcFKwtITxKJYjxwJGSlm7rKO8qPAccZWg"; // Replace with real Bridge API token
+  const ACCESS_TOKEN = "eyJraWQiOiJYYmZSeTktVmNqc0hHSUJDcVcySUVrMmtwdGhPcXFZVHdVdkJmQzJ5b2ljIiwiYWxnIjoiUlMyNTYifQ.eyJ2ZXIiOjEsImp0aSI6IkFULmxDMFVNdmJnLVFvYzBRWnBGbWV5amxUMEhJMHR5SWN2M3BuQzFiM0N2TzAiLCJpc3MiOiJodHRwczovL2lkLmNpc2NvLmNvbS9vYXV0aDIvZGVmYXVsdCIsImF1ZCI6ImFwaTovL2RlZmF1bHQiLCJpYXQiOjE3NDg1MjQyMjEsImV4cCI6MTc0ODUyNzgyMSwiY2lkIjoiY0c5akxYUnlhV0ZzTWpBeU5VMWhlVEl5LTNhNzgyMzgwMzM4OTI5MjE2Y2U3NTFkZTNlMmM4YiIsInNjcCI6WyJjdXN0b21zY29wZSJdLCJzdWIiOiJjRzlqTFhSeWFXRnNNakF5TlUxaGVUSXktM2E3ODIzODAzMzg5MjkyMTZjZTc1MWRlM2UyYzhiIiwiYXpwIjoiY0c5akxYUnlhV0ZzTWpBeU5VMWhlVEl5LTNhNzgyMzgwMzM4OTI5MjE2Y2U3NTFkZTNlMmM4YiJ9.E3V0ogJc6ovndXThUpt0u__YePZ3HoR7B3fRp1j3M-YH0O_yCc69ww8RiiLm3MpJqpYKuUq3-QFlHtZLax09_T5-GAVpoJu0XSJuY2vF4m6Moo63Fjz1Y9a0XKcBbUh3qHOqJ9QW1P_5PZ1hFHelQNhGUqrZrWU9tfmYeExifdZmK4p2_h1WE5IMPHmHAlYJZIhreVQco4N_C_3HJ5nF4RxyXTJu2ZqR-0vJY0VUhKF6y0sben2Gqf7sbQ7A1sVtL_UGb5hr6BSj_5HtrgsQUK-FO7TpUNBBeZXTsdWiNmgFfuDhcn5VPKcFKwtITxKJYjxwJGSlm7rKO8qPAccZWg"; 
   const APP_KEY = "hackathon-ciscoit-fy25-team-25";
 
   const mockEmailList = [
@@ -67,49 +67,35 @@ export function DigestTab() {
 
     const fetchAIDigest = async () => {
       console.log("Fetching GPT summary...");
-        try {
-          const res = await fetch("https://chat-ai.cisco.com/openai/deployments/gpt-4o-mini/chat/completions", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Accept: "application/json",
-              "api-key": ACCESS_TOKEN,
-            },
-            body: JSON.stringify({
-              messages: [
-                { role: "system", content: "You are a helpful assistant." },
-                { role: "user", content: prompt },
-              ],
-              user: JSON.stringify({ appkey: APP_KEY }),
-              stop: ["<|im_end|>"],
-            }),
-          });
+      try {
+        const res = await fetch("https://chat-ai.cisco.com/openai/deployments/gpt-4o-mini/chat/completions", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            "api-key": ACCESS_TOKEN,
+          },
+          body: JSON.stringify({
+            messages: [
+              { role: "system", content: "You are a helpful assistant." },
+              { role: "user", content: prompt },
+            ],
+            user: JSON.stringify({ appkey: APP_KEY }),
+            stop: ["<|im_end|>"],
+          }),
+        });
 
-          const text = await res.text();
-          console.log("GPT response (text):", text);
+        const text = await res.text();
+        console.log("GPT response (text):", text);
 
-          // optional: if this prints good JSON, you can parse it next
-          // const json = JSON.parse(text);
-          // console.log(json);
-
-          // For now, fallback to mock:
-          setDigest({
-              totalEmails: 12,
-              importantEmails: 5,
-              unreadCount: 4,
-              meetingsToday: 3,
-              flaggedItems: 2,
-              topProjects: ["Project X", "AI Platform"],
-              highlights: [
-                { title: "Project X kick-off call at 3 PM", timestamp: "10:12 AM" },
-                { title: "Submit budget report", timestamp: "11:00 AM" },
-              ],
-            });
-        } catch (err) {
-          console.error("GPT fetch failed:", err);
-        }
-
+        // ❗Force-set mock parsed data for now
+        setTimeout(() => setDigest(mockParsedData), 500);
+      } catch (err) {
+        console.error("GPT fetch failed:", err);
+        setTimeout(() => setDigest(mockParsedData), 500); // fallback even on failure
+      }
     };
+
 
     fetchBridgeUser();
     fetchAIDigest();

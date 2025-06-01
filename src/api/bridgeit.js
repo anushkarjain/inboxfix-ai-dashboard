@@ -22,3 +22,24 @@ export const fetchEmails = async () => {
     return null;
   }
 };
+
+
+export async function fetchBridgeTasks(token: string) {
+  try {
+    const res = await fetch("https://bridgeit.cisco.com/api/v1/tasks", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const data = await res.json();
+    return data.tasks || [];
+  } catch (err) {
+    console.error("BridgeIT Task Fetch Failed:", err);
+    return [
+      { title: "Review AI integration", priority: "High", estimatedMinutes: 30 },
+      { title: "Check Outlook sync logs", priority: "Medium", estimatedMinutes: 20 },
+    ];
+  }
+}
+
