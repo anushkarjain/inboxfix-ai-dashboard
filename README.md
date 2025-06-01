@@ -1,73 +1,142 @@
-# Welcome to your Lovable project
+# 📬 InboxFix AI – Smart Email Assistant for Cisco
 
-## Project info
+![InboxFix AI Light Theme](./assets/inboxfix-sidebar-light.png)
+![InboxFix AI Dark Theme](./assets/inboxfix-sidebar-dark.png)
 
-**URL**: https://lovable.dev/projects/482d7834-7e7c-4b0d-9145-ea9f331221ca
+## 🚀 Project Name
+**InboxFix AI**
 
-## How can I edit this code?
+## 👥 Team Name & Members
+**Team 25 – Hack to the Future**  
+- Eshika Jain (Anushkarjain) – Developer, UX Designer  
+- Solo submission
 
-There are several ways of editing your application.
+---
 
-**Use Lovable**
+## 🧠 Problem Statement
+Cisco employees face notification overload across tools like Outlook, Webex, and Jira. Important emails get buried, response times suffer, and productivity drops.
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/482d7834-7e7c-4b0d-9145-ea9f331221ca) and start prompting.
+### ⚠️ Business Problem:
+- Buried priorities in overflowing inboxes
+- Inconsistent follow-ups on flagged or urgent threads
+- Context switching between tools and priorities
 
-Changes made via Lovable will be committed automatically to this repo.
+---
 
-**Use your preferred IDE**
+## 💡 AI-Powered Solution: InboxFix AI
+A smart email assistant that classifies, prioritizes, and schedules email workflows with:
+- ✅ Daily email digest powered by GPT
+- 🧠 AI classification of task types (logical, admin, creative)
+- ⏰ Personal focus scheduler based on calendar & task load
+- 📊 Priority dashboards with trends and sources
+- 💬 Motivational quotes and snooze/reschedule actions
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+---
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+## 🔧 Submission Type
+**✅ Working code-based prototype** (React + GPT + BridgeIT APIs)  
+Extra credit included: 🎯 Fully functional dashboard UI, with mocked Outlook Add-in preview.
 
-Follow these steps:
+## 📹 Vidcast Demo (≤ 5 min)
+🎥 [Click to watch](#) — _Add your Loom/YouTube video here_
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+---
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+## 📂 Repository Link
+GitHub: [https://github.com/anushkarjain/inboxfix-ai-dashboard](https://github.com/anushkarjain/inboxfix-ai-dashboard)
 
-# Step 3: Install the necessary dependencies.
-npm i
+---
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+## 🛠️ How to Run This Code Locally
+
+```bash
+# 1. Clone the repo
+git clone https://github.com/anushkarjain/inboxfix-ai-dashboard
+cd inboxfix-ai-dashboard
+
+# 2. Install dependencies
+npm install
+
+# 3. Create a .env.local file (for token, optional)
+touch .env.local
+
+# 4. Run the dev server
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+_Use a modern browser (Chrome/Edge), preferably desktop for full UI._
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+---
 
-**Use GitHub Codespaces**
+## ⚙️ Tech Stack Used
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+| Area | Stack |
+|------|-------|
+| Frontend | React + TypeScript + TailwindCSS |
+| Charts | Recharts |
+| APIs | BridgeIT Profile API, GPT via Cisco Chat API |
+| State | React Context |
+| Auth | Bearer Token (for demo only) |
+| Deployment | GitHub Pages + Manual Push |
+| Design Mockups | Polymet AI, Figma (for Outlook Add-in UI) |
 
-## What technologies are used for this project?
+---
 
-This project is built with:
+## 🧩 Features
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+- [x] Priority-wise email classification (High, Medium, Low)
+- [x] Digest summary with unread, flagged, meeting stats
+- [x] GPT-based email summarization (mocked)
+- [x] BridgeIT API integration for real user profile + task data
+- [x] Personal focus time generator (respects lunch hours & energy peaks)
+- [x] Quote engine based on time of day
+- [x] Snooze & Move logic for every task
+- [x] Trend charts with sources and daily patterns
 
-## How can I deploy this project?
+---
 
-Simply open [Lovable](https://lovable.dev/projects/482d7834-7e7c-4b0d-9145-ea9f331221ca) and click on Share -> Publish.
+## 📥 Outlook Add-in (Preview Only)
 
-## Can I connect a custom domain to my Lovable project?
+- Light & Dark mode designs attached
+- Replicates dashboard logic within Outlook
+- Built with Polymet AI
 
-Yes, you can!
+![Preview - Outlook Add-in](./assets/inboxfix-sidebar-light.png)
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+---
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+## 🔮 Future Enhancements
+
+- 🔁 Real calendar sync (Outlook/Google Calendar APIs)
+- 🔍 Smart insights (which days/tasks lead to delays)
+- 🤖 Auto GPT-classifier for long emails (brain-heavy/admin)
+- ☁️ One-click deploy to Edge Sidebar as Outlook add-in
+- 🔐 Secure OAuth2 token rotation for APIs
+
+---
+
+## 🧠 AI Summary Engine (BridgeGPT)
+- Prompts designed for digest-style summaries from email blobs
+- Token-safe truncation to support hourly refreshes
+- Preconfigured with appkey/session_id/user JSON
+
+---
+
+## 🧪 Testing Notes
+- Mocked email data used for GPT input
+- Task estimation logic uses keyword detection for time
+- Works best in desktop viewports ≥ 1280px
+
+---
+
+## 🕒 Submission Timestamp
+June 01, 2025 (IST)
+
+---
+
+## 📝 Feedback
+Please feel free to raise an issue, share feedback, or fork this repo!
+
+---
+
+_“InboxFix AI – Because your brain deserves better than inbox chaos.”_
