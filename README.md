@@ -8,7 +8,7 @@
 
 ## 👥 Team Name & Members
 **Team 25 – Hack to the Future**  
-- Eshika Jain (Anushkarjain) – Developer, UX Designer  
+- Anushka Jain (anushkaj) – Data Engineer
 - Solo submission
 
 ---
