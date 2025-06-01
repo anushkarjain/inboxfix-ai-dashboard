@@ -1,174 +1,148 @@
+"use client";
+import { useEffect, useState } from "react";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  LineChart,
+  Line,
+} from "recharts";
 
-import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from "recharts";
-import { Mail, AlertTriangle, CheckCircle, TrendingUp, BarChart3 } from "lucide-react";
-import { Tooltip as UITooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-
-const mockChartData7Days = [
-  { day: "Mon", alerts: 45 },
-  { day: "Tue", alerts: 52 },
-  { day: "Wed", alerts: 38 },
-  { day: "Thu", alerts: 67 },
-  { day: "Fri", alerts: 41 },
-  { day: "Sat", alerts: 23 },
-  { day: "Sun", alerts: 18 },
+const priorityData = [
+  { priority: "High", count: 6 },
+  { priority: "Medium", count: 12 },
+  { priority: "Low", count: 9 },
 ];
 
-const mockChartData30Days = [
-  { day: "Week 1", alerts: 284 },
-  { day: "Week 2", alerts: 312 },
-  { day: "Week 3", alerts: 245 },
-  { day: "Week 4", alerts: 298 },
+const sourceData = [
+  { source: "Jira", count: 8 },
+  { source: "Webex", count: 5 },
+  { source: "Outlook", count: 14 },
 ];
 
-const kpiCards = [
-  {
-    title: "Important Emails Today",
-    value: "12",
-    icon: Mail,
-    color: "text-cisco-blue",
-    bgColor: "bg-cisco-blue/10",
-    description: "High-priority emails requiring attention"
-  },
-  {
-    title: "Total Alerts Received",
-    value: "284",
-    icon: AlertTriangle,
-    color: "text-cisco-purple",
-    bgColor: "bg-cisco-purple/10",
-    description: "All email notifications this week"
-  },
-  {
-    title: "Daily Digest Status",
-    value: "✓ Sent",
-    icon: CheckCircle,
-    color: "text-cisco-green",
-    bgColor: "bg-cisco-green/10",
-    description: "Today's summary delivered successfully"
-  },
-  {
-    title: "Weekly Trend",
-    value: "+15%",
-    icon: TrendingUp,
-    color: "text-orange-600",
-    bgColor: "bg-orange-100",
-    description: "Email volume compared to last week"
-  },
+const trendData = [
+  { day: "Mon", emails: 10 },
+  { day: "Tue", emails: 15 },
+  { day: "Wed", emails: 8 },
+  { day: "Thu", emails: 12 },
+  { day: "Fri", emails: 20 },
+];
+
+const focusList = [
+  "Reply to pending threads from Engineering",
+  "Review flagged emails from leadership",
+  "Approve QBR presentation",
 ];
 
 const barColors = ["#00BCEB", "#AE63E4", "#5AC8B0", "#F59E0B"];
 
 export function HomeTab() {
-  const [timeRange, setTimeRange] = useState("7days");
-  
-  const chartData = timeRange === "7days" ? mockChartData7Days : mockChartData30Days;
+  const [greeting, setGreeting] = useState("Hello");
+
+  useEffect(() => {
+    const hour = new Date().getHours();
+    if (hour < 12) setGreeting("Good morning");
+    else if (hour < 18) setGreeting("Good afternoon");
+    else setGreeting("Good evening");
+  }, []);
 
   return (
-    <TooltipProvider>
-      <div className="space-y-8 animate-fade-in">
-        <div className="flex items-center space-x-3">
-          <div className="p-2 bg-cisco-blue rounded-lg">
-            <BarChart3 className="w-6 h-6 text-white" />
-          </div>
-          <div>
-            <h2 className="text-3xl font-bold text-cisco-dark">
-              Dashboard Overview
-            </h2>
-            <p className="text-cisco-gray-dark">Your personalized email management insights</p>
-          </div>
-        </div>
+    <div className="space-y-6 animate-fade-in">
+      <div>
+        <h2 className="text-3xl font-bold text-gray-900 mb-1">{greeting}, Anushka 👋</h2>
+        <p className="text-gray-600">Here’s your daily summary overview</p>
+      </div>
 
-        {/* KPI Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {kpiCards.map((card, index) => (
-            <UITooltip key={index}>
-              <TooltipTrigger asChild>
-                <Card className="hover-lift border-0 shadow-lg shadow-gray-200/50 bg-white/80 backdrop-blur-sm">
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm font-medium text-cisco-gray-dark mb-2">{card.title}</p>
-                        <p className="text-3xl font-bold text-cisco-dark">{card.value}</p>
-                      </div>
-                      <div className={`p-4 rounded-2xl ${card.bgColor} shadow-inner`}>
-                        <card.icon className={`w-7 h-7 ${card.color}`} />
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </TooltipTrigger>
-              <TooltipContent className="bg-cisco-dark text-white">
-                {card.description}
-              </TooltipContent>
-            </UITooltip>
-          ))}
-        </div>
-
-        {/* Chart */}
-        <Card className="border-0 shadow-xl shadow-gray-200/50 bg-white/90 backdrop-blur-sm">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Priority Chart */}
+        <Card>
           <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-xl font-semibold text-cisco-dark flex items-center space-x-2">
-                <TrendingUp className="w-5 h-5 text-cisco-blue" />
-                <span>Alert Volume Trends</span>
-              </CardTitle>
-              <Select value={timeRange} onValueChange={setTimeRange}>
-                <SelectTrigger className="w-40 border-cisco-blue/20 focus:border-cisco-blue">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="7days">Last 7 Days</SelectItem>
-                  <SelectItem value="30days">Last 30 Days</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+            <CardTitle>Email by Priority</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="h-80">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={chartData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e0e7ff" opacity={0.5} />
-                  <XAxis 
-                    dataKey="day" 
-                    stroke="#6b7280" 
-                    fontSize={12}
-                    fontWeight={500}
-                  />
-                  <YAxis 
-                    stroke="#6b7280" 
-                    fontSize={12}
-                    fontWeight={500}
-                  />
-                  <Tooltip 
-                    contentStyle={{
-                      backgroundColor: '#005073',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '12px',
-                      boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.25)',
-                      fontWeight: 500
-                    }}
-                    cursor={{ fill: 'rgba(0, 188, 235, 0.1)' }}
-                  />
-                  <Bar 
-                    dataKey="alerts" 
-                    radius={[8, 8, 0, 0]}
-                  >
-                    {chartData.map((entry, index) => (
-                      <Cell 
-                        key={`cell-${index}`} 
-                        fill={barColors[index % barColors.length]}
-                      />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
+            <ResponsiveContainer width="100%" height={250}>
+              <BarChart data={priorityData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="priority" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="count" fill="#1a73e8" />
+              </BarChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+
+        {/* Source Chart */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Email Sources</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={250}>
+              <BarChart data={sourceData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="source" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="count" fill="#34a853" />
+              </BarChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+
+        {/* Trend Line */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Daily Email Trend</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={250}>
+              <LineChart data={trendData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="day" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Line
+                  type="monotone"
+                  dataKey="emails"
+                  stroke="#fbbc04"
+                  strokeWidth={2}
+                />
+              </LineChart>
+            </ResponsiveContainer>
           </CardContent>
         </Card>
       </div>
-    </TooltipProvider>
+
+      {/* Today’s Focus Section */}
+      <div>
+        <Card>
+          <CardHeader>
+            <CardTitle>🔍 Today’s Focus</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="list-disc list-inside text-gray-700 space-y-1 text-sm">
+              {focusList.map((task, idx) => (
+                <li key={idx}>{task}</li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
   );
 }

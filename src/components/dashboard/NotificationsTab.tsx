@@ -1,201 +1,105 @@
-
-import { useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { MoreHorizontal, Flag, Clock, CheckCircle } from "lucide-react";
 
-const mockNotifications = [
-  {
-    id: 1,
-    sender: "Sarah Johnson",
-    subject: "Q1 Budget Review Meeting",
-    category: "Meeting",
-    timestamp: "2 hours ago",
-    priority: "High",
-    isRead: false,
-  },
-  {
-    id: 2,
-    sender: "JIRA System",
-    subject: "Critical Bug Report #JB-1234",
-    category: "Alert",
-    timestamp: "4 hours ago",
-    priority: "High",
-    isRead: false,
-  },
-  {
-    id: 3,
-    sender: "Mike Chen",
-    subject: "Code Review Required",
-    category: "Action Required",
-    timestamp: "6 hours ago",
-    priority: "Medium",
-    isRead: true,
-  },
-  {
-    id: 4,
-    sender: "Webex Teams",
-    subject: "Meeting Recording Available",
-    category: "Meeting",
-    timestamp: "8 hours ago",
-    priority: "Low",
-    isRead: true,
-  },
-  {
-    id: 5,
-    sender: "IT Security",
-    subject: "Monthly Security Update",
-    category: "Alert",
-    timestamp: "1 day ago",
-    priority: "Medium",
-    isRead: false,
-  },
-];
-
-const priorityColors = {
-  High: "bg-red-100 text-red-800 border-red-200",
-  Medium: "bg-yellow-100 text-yellow-800 border-yellow-200",
-  Low: "bg-green-100 text-green-800 border-green-200",
+type Notification = {
+  type: string;
+  message: string;
+  source: string;
+  time: string;
 };
 
-const categoryColors = {
-  Meeting: "bg-blue-100 text-blue-800",
-  Alert: "bg-orange-100 text-orange-800",
-  "Action Required": "bg-purple-100 text-purple-800",
+type BridgeSuggestion = {
+  summary: string;
+  actionItems: string[];
 };
 
 export function NotificationsTab() {
-  const [notifications, setNotifications] = useState(mockNotifications);
-  const [priorityFilter, setPriorityFilter] = useState<string>("all");
-  const [sourceFilter, setSourceFilter] = useState<string>("all");
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [aiSuggestions, setAiSuggestions] = useState<BridgeSuggestion | null>(null);
 
-  const filteredNotifications = notifications.filter((notification) => {
-    const priorityMatch = priorityFilter === "all" || notification.priority === priorityFilter;
-    const sourceMatch = sourceFilter === "all" || 
-      (sourceFilter === "Outlook" && !["JIRA System", "Webex Teams"].includes(notification.sender)) ||
-      (sourceFilter === "Jira" && notification.sender === "JIRA System") ||
-      (sourceFilter === "Webex" && notification.sender === "Webex Teams");
-    return priorityMatch && sourceMatch;
-  });
+  const ACCESS_TOKEN = "<Paste Bridge Token>"; // Optional
+  const APP_KEY = "hackathon-ciscoit-fy25-team-25";
 
-  const handleMarkAsRead = (id: number) => {
-    setNotifications(notifications.map(notif => 
-      notif.id === id ? { ...notif, isRead: true } : notif
-    ));
-  };
+  useEffect(() => {
+    // Step 1: Mock notification fetch
+    const mockNotifs: Notification[] = [
+      { type: "High", message: "Jira bug #3487 needs attention", source: "Jira", time: "9:15 AM" },
+      { type: "Low", message: "Webex missed call from John", source: "Webex", time: "10:00 AM" },
+      { type: "Medium", message: "Outlook: Policy update from HR", source: "Outlook", time: "11:45 AM" },
+    ];
+    setNotifications(mockNotifs);
 
-  const handleSnooze = (id: number) => {
-    console.log(`Snoozed notification ${id}`);
-  };
+    // Step 2: Call GPT to get AI suggestions (mocked)
+    const prompt = `Based on these notifications:\n${mockNotifs.map(n => `• ${n.message} (${n.source}, ${n.time})`).join("\n")}\nSummarize key actions and urgent items.`;
 
-  const handleFlag = (id: number) => {
-    console.log(`Flagged notification ${id}`);
-  };
+    fetch("https://chat-ai.cisco.com/openai/deployments/gpt-4o-mini/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "api-key": ACCESS_TOKEN,
+      },
+      body: JSON.stringify({
+        messages: [
+          { role: "system", content: "You are a helpful assistant." },
+          { role: "user", content: prompt }
+        ],
+        user: JSON.stringify({ appkey: APP_KEY }),
+        stop: ["<|im_end|>"]
+      })
+    })
+      .then(res => res.json())
+      .then(data => {
+        const text = data?.choices?.[0]?.message?.content || "";
+        setAiSuggestions({
+          summary: text,
+          actionItems: ["Review Jira bug #3487", "Respond to missed call", "Acknowledge HR policy update"]
+        });
+      })
+      .catch(err => {
+        console.warn("Bridge AI fallback used:", err);
+        setAiSuggestions({
+          summary: "• 1 urgent Jira ticket needs attention\n• 1 missed Webex call\n• HR sent a new policy update",
+          actionItems: ["Check Jira #3487", "Follow up with John", "Read HR mail"]
+        });
+      });
+
+  }, []);
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <div>
-        <h2 className="text-3xl font-bold text-gray-900 mb-2">Notifications</h2>
-        <p className="text-gray-600">Manage your email alerts and notifications</p>
-      </div>
+      <h2 className="text-3xl font-bold text-gray-900">Notifications</h2>
 
-      {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-4">
-        <Select value={priorityFilter} onValueChange={setPriorityFilter}>
-          <SelectTrigger className="w-full sm:w-48">
-            <SelectValue placeholder="Filter by Priority" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Priorities</SelectItem>
-            <SelectItem value="High">High</SelectItem>
-            <SelectItem value="Medium">Medium</SelectItem>
-            <SelectItem value="Low">Low</SelectItem>
-          </SelectContent>
-        </Select>
-
-        <Select value={sourceFilter} onValueChange={setSourceFilter}>
-          <SelectTrigger className="w-full sm:w-48">
-            <SelectValue placeholder="Filter by Source" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Sources</SelectItem>
-            <SelectItem value="Outlook">Outlook</SelectItem>
-            <SelectItem value="Jira">Jira</SelectItem>
-            <SelectItem value="Webex">Webex</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-
-      {/* Notification Cards */}
-      <div className="space-y-4">
-        {filteredNotifications.map((notification) => (
-          <Card key={notification.id} className={`transition-all duration-200 hover:shadow-md ${
-            !notification.isRead ? "border-l-4 border-l-cisco-blue bg-blue-50/30" : ""
-          }`}>
-            <CardContent className="p-6">
-              <div className="flex items-start justify-between">
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-3 mb-2">
-                    <h3 className="font-semibold text-gray-900 truncate">
-                      {notification.sender}
-                    </h3>
-                    <Badge 
-                      variant="outline" 
-                      className={priorityColors[notification.priority as keyof typeof priorityColors]}
-                    >
-                      {notification.priority}
-                    </Badge>
-                    <Badge 
-                      variant="secondary" 
-                      className={categoryColors[notification.category as keyof typeof categoryColors]}
-                    >
-                      {notification.category}
-                    </Badge>
-                  </div>
-                  <p className="text-lg font-medium text-gray-800 mb-2">
-                    {notification.subject}
-                  </p>
-                  <p className="text-sm text-gray-500">{notification.timestamp}</p>
-                </div>
-                
-                <div className="flex items-center gap-2 ml-4">
-                  {!notification.isRead && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleMarkAsRead(notification.id)}
-                      className="hover:bg-green-50 hover:border-green-300"
-                    >
-                      <CheckCircle className="w-4 h-4 mr-1" />
-                      Mark as Read
-                    </Button>
-                  )}
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleSnooze(notification.id)}
-                    className="hover:bg-yellow-50 hover:border-yellow-300"
-                  >
-                    <Clock className="w-4 h-4 mr-1" />
-                    Snooze
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleFlag(notification.id)}
-                    className="hover:bg-red-50 hover:border-red-300"
-                  >
-                    <Flag className="w-4 h-4 mr-1" />
-                    Flag
-                  </Button>
-                </div>
-              </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {notifications.map((notif, idx) => (
+          <Card key={idx}>
+            <CardHeader>
+              <CardTitle>{notif.message}</CardTitle>
+            </CardHeader>
+            <CardContent className="flex justify-between items-center">
+              <span className="text-gray-600">{notif.source}</span>
+              <Badge>{notif.type}</Badge>
             </CardContent>
           </Card>
         ))}
       </div>
+
+      {aiSuggestions && (
+        <div>
+          <h3 className="text-xl font-semibold mt-8 text-gray-800">AI Suggestions</h3>
+          <Card className="mt-3">
+            <CardContent className="p-4">
+              <p className="text-gray-700 mb-2 whitespace-pre-line">{aiSuggestions.summary}</p>
+              <ul className="list-disc list-inside text-gray-600">
+                {aiSuggestions.actionItems.map((item, idx) => (
+                  <li key={idx}>{item}</li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </div>
   );
 }

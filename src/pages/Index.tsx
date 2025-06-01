@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
@@ -10,19 +9,21 @@ import { SettingsTab } from "@/components/dashboard/SettingsTab";
 import { Badge } from "@/components/ui/badge";
 import { Menu, Award, Sparkles } from "lucide-react";
 
+type TabKey = "home" | "digest" | "notifications" | "filters" | "settings";
+
 const Index = () => {
-  const [activeTab, setActiveTab] = useState("home");
+  const [activeTab, setActiveTab] = useState<TabKey>("home");
 
   const renderTabContent = () => {
     switch (activeTab) {
       case "home":
         return <HomeTab />;
+      case "digest":
+        return <DigestTab />;
       case "notifications":
         return <NotificationsTab />;
       case "filters":
         return <FiltersTab />;
-      case "digest":
-        return <DigestTab />;
       case "settings":
         return <SettingsTab />;
       default:
@@ -51,12 +52,12 @@ const Index = () => {
                   </p>
                 </div>
               </div>
-              <div className="text-sm text-cisco-gray-dark font-medium">
-                {new Date().toLocaleDateString('en-US', { 
-                  weekday: 'long', 
-                  year: 'numeric', 
-                  month: 'long', 
-                  day: 'numeric' 
+              <div className="text-sm text-gray-500">
+                {new Date().toLocaleDateString("en-US", {
+                  weekday: "long",
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
                 })}
               </div>
             </div>

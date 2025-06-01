@@ -1,181 +1,178 @@
-
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Mail, Clock, User, Send, CheckCircle, Sparkles } from "lucide-react";
 
-const mockDigestEmails = [
-  {
-    id: 1,
-    sender: "Sarah Johnson",
-    subject: "Q1 Budget Review Meeting",
-    preview: "Hi team, I wanted to schedule our quarterly budget review meeting for next week. Please review the attached...",
-    importance: "High",
-    timestamp: "2 hours ago",
-  },
-  {
-    id: 2,
-    sender: "JIRA System",
-    subject: "Critical Bug Report #JB-1234",
-    preview: "A critical bug has been reported in the production environment. The issue affects user authentication and requires...",
-    importance: "High",
-    timestamp: "4 hours ago",
-  },
-  {
-    id: 3,
-    sender: "Mike Chen",
-    subject: "Code Review Required",
-    preview: "Please review the pull request for the new API endpoints. The changes include enhanced security measures and...",
-    importance: "Medium",
-    timestamp: "6 hours ago",
-  },
-  {
-    id: 4,
-    sender: "IT Security",
-    subject: "Monthly Security Update",
-    preview: "This month's security report shows improvements in our threat detection capabilities. We've successfully...",
-    importance: "Medium",
-    timestamp: "1 day ago",
-  },
-  {
-    id: 5,
-    sender: "Marketing Team",
-    subject: "Campaign Performance Report",
-    preview: "The latest marketing campaign has exceeded expectations with a 25% increase in conversion rates. Here's a detailed...",
-    importance: "Low",
-    timestamp: "1 day ago",
-  },
-];
+type DigestData = {
+  totalEmails: number;
+  importantEmails: number;
+  unreadCount: number;
+  meetingsToday: number;
+  flaggedItems: number;
+  topProjects: string[];
+  highlights: { title: string; timestamp: string }[];
+};
 
-const importanceColors = {
-  High: "bg-red-50 text-red-700 border-red-200",
-  Medium: "bg-yellow-50 text-yellow-700 border-yellow-200",
-  Low: "bg-green-50 text-green-700 border-green-200",
+type BridgeUser = {
+  name: string;
+  email: string;
+  title: string;
+  department: string;
 };
 
 export function DigestTab() {
-  const [isEmailSent, setIsEmailSent] = useState(false);
+  const [userInfo, setUserInfo] = useState<BridgeUser | null>(null);
+  const [digest, setDigest] = useState<DigestData | null>(null);
+  const [loadingUser, setLoadingUser] = useState(true);
 
-  const handleSendPreview = () => {
-    setIsEmailSent(true);
-    setTimeout(() => setIsEmailSent(false), 3000);
-    console.log("Sending digest preview to email...");
+  const ACCESS_TOKEN = "eyJraWQiOiJYYmZSeTktVmNqc0hHSUJDcVcySUVrMmtwdGhPcXFZVHdVdkJmQzJ5b2ljIiwiYWxnIjoiUlMyNTYifQ.eyJ2ZXIiOjEsImp0aSI6IkFULmxDMFVNdmJnLVFvYzBRWnBGbWV5amxUMEhJMHR5SWN2M3BuQzFiM0N2TzAiLCJpc3MiOiJodHRwczovL2lkLmNpc2NvLmNvbS9vYXV0aDIvZGVmYXVsdCIsImF1ZCI6ImFwaTovL2RlZmF1bHQiLCJpYXQiOjE3NDg1MjQyMjEsImV4cCI6MTc0ODUyNzgyMSwiY2lkIjoiY0c5akxYUnlhV0ZzTWpBeU5VMWhlVEl5LTNhNzgyMzgwMzM4OTI5MjE2Y2U3NTFkZTNlMmM4YiIsInNjcCI6WyJjdXN0b21zY29wZSJdLCJzdWIiOiJjRzlqTFhSeWFXRnNNakF5TlUxaGVUSXktM2E3ODIzODAzMzg5MjkyMTZjZTc1MWRlM2UyYzhiIiwiYXpwIjoiY0c5akxYUnlhV0ZzTWpBeU5VMWhlVEl5LTNhNzgyMzgwMzM4OTI5MjE2Y2U3NTFkZTNlMmM4YiJ9.E3V0ogJc6ovndXThUpt0u__YePZ3HoR7B3fRp1j3M-YH0O_yCc69ww8RiiLm3MpJqpYKuUq3-QFlHtZLax09_T5-GAVpoJu0XSJuY2vF4m6Moo63Fjz1Y9a0XKcBbUh3qHOqJ9QW1P_5PZ1hFHelQNhGUqrZrWU9tfmYeExifdZmK4p2_h1WE5IMPHmHAlYJZIhreVQco4N_C_3HJ5nF4RxyXTJu2ZqR-0vJY0VUhKF6y0sben2Gqf7sbQ7A1sVtL_UGb5hr6BSj_5HtrgsQUK-FO7TpUNBBeZXTsdWiNmgFfuDhcn5VPKcFKwtITxKJYjxwJGSlm7rKO8qPAccZWg"; // Replace with real Bridge API token
+  const APP_KEY = "hackathon-ciscoit-fy25-team-25";
+
+  const mockEmailList = [
+    "• Project X Update from lead@cisco.com at 10:00 AM",
+    "• Budget Review Meeting from finance@cisco.com at 11:00 AM",
+    "• Reminder: Security Training from it@cisco.com at 1:00 PM",
+  ].join("\n");
+
+  const prompt = `Summarize the following emails and extract total, important, unread, meetings, flagged, top projects, and highlights:\n${mockEmailList}`;
+
+  const mockParsedData: DigestData = {
+    totalEmails: 12,
+    importantEmails: 5,
+    unreadCount: 4,
+    meetingsToday: 3,
+    flaggedItems: 2,
+    topProjects: ["Project X", "AI Platform"],
+    highlights: [
+      { title: "Project X kick-off call at 3 PM", timestamp: "10:12 AM" },
+      { title: "Submit budget report", timestamp: "11:00 AM" },
+    ],
   };
 
+  useEffect(() => {
+    const fetchBridgeUser = async () => {
+      try {
+        const res = await fetch("https://bridgeit.cisco.com/api/v1/user/profile", {
+          headers: {
+            Authorization: `Bearer ${ACCESS_TOKEN}`,
+          },
+        });
+        const data = await res.json();
+        setUserInfo(data);
+      } catch (error) {
+        console.error("BridgeIT user fetch failed:", error);
+      } finally {
+        setLoadingUser(false);
+      }
+    };
+
+    const fetchAIDigest = async () => {
+      console.log("Fetching GPT summary...");
+        try {
+          const res = await fetch("https://chat-ai.cisco.com/openai/deployments/gpt-4o-mini/chat/completions", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+              "api-key": ACCESS_TOKEN,
+            },
+            body: JSON.stringify({
+              messages: [
+                { role: "system", content: "You are a helpful assistant." },
+                { role: "user", content: prompt },
+              ],
+              user: JSON.stringify({ appkey: APP_KEY }),
+              stop: ["<|im_end|>"],
+            }),
+          });
+
+          const text = await res.text();
+          console.log("GPT response (text):", text);
+
+          // optional: if this prints good JSON, you can parse it next
+          // const json = JSON.parse(text);
+          // console.log(json);
+
+          // For now, fallback to mock:
+          setDigest({
+              totalEmails: 12,
+              importantEmails: 5,
+              unreadCount: 4,
+              meetingsToday: 3,
+              flaggedItems: 2,
+              topProjects: ["Project X", "AI Platform"],
+              highlights: [
+                { title: "Project X kick-off call at 3 PM", timestamp: "10:12 AM" },
+                { title: "Submit budget report", timestamp: "11:00 AM" },
+              ],
+            });
+        } catch (err) {
+          console.error("GPT fetch failed:", err);
+        }
+
+    };
+
+    fetchBridgeUser();
+    fetchAIDigest();
+  }, []);
+
+  if (!digest) {
+    return <p className="text-center mt-10 text-gray-500">Loading Digest...</p>;
+  }
+
   return (
-    <div className="space-y-8 animate-fade-in">
-      <div className="flex items-center space-x-3">
-        <div className="p-2 bg-gradient-to-br from-cisco-blue to-cisco-blue-dark rounded-lg">
-          <Mail className="w-6 h-6 text-white" />
+    <div className="space-y-6 animate-fade-in">
+      {userInfo && (
+        <div className="mb-4">
+          <p className="text-sm text-gray-600">
+            Welcome back,{" "}
+            <span className="font-semibold">
+              {userInfo.name}
+            </span>{" "}
+            ({userInfo.title}, {userInfo.department})
+          </p>
         </div>
-        <div>
-          <h2 className="text-3xl font-bold bg-gradient-to-r from-cisco-dark to-cisco-blue bg-clip-text text-transparent">
-            Daily Digest Preview
-          </h2>
-          <p className="text-cisco-gray-dark">Preview of your top 5 email alerts for today</p>
-        </div>
+      )}
+
+      <div>
+        <h2 className="text-3xl font-bold text-gray-900 mb-2">Daily Digest</h2>
+        <p className="text-gray-600">Summary of your email activity</p>
       </div>
 
-      {/* Digest Header */}
-      <Card className="bg-gradient-to-r from-cisco-blue/5 via-white to-cisco-purple/5 border-cisco-blue/20 shadow-xl shadow-gray-200/50">
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div className="p-3 bg-gradient-to-br from-cisco-blue to-cisco-blue-dark rounded-xl shadow-lg">
-                <Sparkles className="w-7 h-7 text-white" />
-              </div>
-              <div>
-                <CardTitle className="text-2xl bg-gradient-to-r from-cisco-blue to-cisco-dark bg-clip-text text-transparent">
-                  Daily Email Digest
-                </CardTitle>
-                <p className="text-sm text-cisco-gray-dark mt-1 font-medium">
-                  Generated on {new Date().toLocaleDateString('en-US', { 
-                    weekday: 'long', 
-                    year: 'numeric', 
-                    month: 'long', 
-                    day: 'numeric' 
-                  })}
-                </p>
-              </div>
-            </div>
-            <Badge variant="secondary" className="bg-cisco-green/10 text-cisco-green border-cisco-green/20 px-4 py-2 text-sm font-semibold">
-              {mockDigestEmails.length} emails
-            </Badge>
-          </div>
-        </CardHeader>
-      </Card>
-
-      {/* Email Previews */}
-      <div className="space-y-4">
-        {mockDigestEmails.map((email, index) => (
-          <Card key={email.id} className="hover-lift border-0 shadow-lg shadow-gray-200/50 bg-white/90 backdrop-blur-sm">
-            <CardContent className="p-6">
-              <div className="flex items-start justify-between mb-4">
-                <div className="flex items-center space-x-4">
-                  <div className="w-10 h-10 bg-gradient-to-br from-cisco-blue/20 to-cisco-purple/20 rounded-full flex items-center justify-center">
-                    <User className="w-5 h-5 text-cisco-blue" />
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-cisco-dark text-lg">{email.sender}</h3>
-                    <div className="flex items-center space-x-2 mt-1">
-                      <Clock className="w-4 h-4 text-cisco-gray-dark" />
-                      <span className="text-sm text-cisco-gray-dark font-medium">{email.timestamp}</span>
-                    </div>
-                  </div>
-                </div>
-                <Badge 
-                  variant="outline" 
-                  className={`${importanceColors[email.importance as keyof typeof importanceColors]} font-semibold px-3 py-1`}
-                >
-                  {email.importance}
-                </Badge>
-              </div>
-              
-              <div className="space-y-3">
-                <h4 className="font-semibold text-cisco-dark text-lg leading-tight">
-                  {email.subject}
-                </h4>
-                <p className="text-cisco-gray-dark leading-relaxed">
-                  {email.preview}
-                </p>
-              </div>
-              
-              <div className="mt-5 pt-4 border-t border-cisco-blue/10">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-cisco-gray-dark font-medium">Email #{index + 1} of {mockDigestEmails.length}</span>
-                  <span className="text-cisco-blue font-semibold">Priority: {email.importance}</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+        <StatCard title="Total Emails" value={digest.totalEmails} />
+        <StatCard title="Important Emails" value={digest.importantEmails} />
+        <StatCard title="Unread Emails" value={digest.unreadCount} />
+        <StatCard title="Meetings Today" value={digest.meetingsToday} />
+        <StatCard title="Flagged Emails" value={digest.flaggedItems} />
+        <StatCard title="Top Projects" value={digest.topProjects.join(", ")} />
       </div>
 
-      {/* Send Preview Button */}
-      <div className="flex justify-center pt-8">
-        <Button 
-          onClick={handleSendPreview}
-          disabled={isEmailSent}
-          className={`px-10 py-4 text-lg font-semibold rounded-xl shadow-lg transition-all duration-300 ${
-            isEmailSent 
-              ? "bg-cisco-green hover:bg-cisco-green text-white animate-pulse-success" 
-              : "bg-gradient-to-r from-cisco-blue to-cisco-blue-dark hover:from-cisco-blue-dark hover:to-cisco-blue text-white hover:shadow-xl hover:scale-105"
-          }`}
-        >
-          {isEmailSent ? (
-            <>
-              <CheckCircle className="w-6 h-6 mr-3" />
-              Email Sent Successfully!
-            </>
-          ) : (
-            <>
-              <Send className="w-6 h-6 mr-3" />
-              Send Preview to Email
-            </>
-          )}
-        </Button>
+      <div>
+        <h3 className="text-lg font-semibold text-gray-800 mb-2">Today's Highlights</h3>
+        <div className="space-y-2">
+          {digest.highlights.map((item, idx) => (
+            <Card key={idx}>
+              <CardContent className="p-4 flex items-center justify-between">
+                <p className="text-gray-800 font-medium">{item.title}</p>
+                <Badge variant="outline">{item.timestamp}</Badge>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       </div>
     </div>
+  );
+}
+
+function StatCard({ title, value }: { title: string; value: string | number }) {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-sm text-gray-500">{title}</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <p className="text-2xl font-bold text-gray-900">{value}</p>
+      </CardContent>
+    </Card>
   );
 }
